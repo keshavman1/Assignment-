@@ -51,19 +51,37 @@ Launch the FastAPI Backend: Start the FastAPI backend with this command:
 ```python
 uvicorn main:app --reload
 ```
+If u get problem in launching uvicorn then 
+
+```bash
+pip install pydantic[email]
+
+```
+
+After that, try running your uvicorn command again:
+
+```bash
+uvicorn main:app --reload
+
+```
+
 Start the Streamlit Frontend: To launch the Streamlit UI, run:
+
 ```python
 streamlit run app.py
 ```
- http://localhost:8000.
 
-## Usage
-Application Features
-Create a New Student: Add a student by entering their unique details (ID, Name, Age, Email).
+## Run all three applications—Ollama, Streamlit, and Uvicorn—in three different CMD terminals.
 
-Update Existing Student: Modify an existing student's information by providing their ID and the updated details.
+## Application Features
 
-Delete Student: Remove a student's record by their unique student ID.
+Add a New Student: Complete the form by entering the student's details, including their unique ID, full name, age, and email address, to successfully register a new student in the system.
+
+Edit an Existing Student's Information: Update the details of a student by providing their unique student ID and the new or corrected information, ensuring that the student's record is accurately reflected in the system.
+
+Remove a Student from the System: To permanently delete a student's record, simply provide the student's ID, and the system will remove all associated information from the database.
+
+Generate an AI-Powered Summary for Each Student: Utilize the power of Ollama’s AI technology to automatically generate insightful and personalized summaries for each student based on their records and history, offering valuable insights into their performance and background.
 
 
 
