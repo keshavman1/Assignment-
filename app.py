@@ -2,8 +2,122 @@ import streamlit as st
 import pandas as pd
 import requests
 
-# FastAPI endpoint
 API_URL = "http://127.0.0.1:8000"
+
+# Initialize session state for created_students if not already initialized
+if "created_students" not in st.session_state:
+    st.session_state["created_students"] = {}
+
+st.markdown("""
+    <style>
+        /* Set the background color to black for the entire app */
+        body {
+            background-color: #000000;
+            color: white;
+        }
+
+        /* Header styling */
+        h1, h2, h3 {
+            color: #003366;  /* Dark blue for headings */
+            text-align: center;  /* Center the headers */
+        }
+
+        /* Style the header of the app */
+        .stApp {
+            background-color: #000000;
+        }
+
+        /* Modern box-style for sections */
+        .section-box {
+            background-color: #262730;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Style the select box with dark background */
+        .stSelectbox select {
+            background-color: #333333;
+            color: white;
+            border-radius: 5px;
+            padding: 10px;
+            border: none;
+        }
+
+        /* Style text input fields */
+        .stTextInput input, .stNumberInput input {
+            background-color: #333333;
+            color: white;
+            border-radius: 5px;
+            padding: 10px;
+            border: none;
+        }
+
+        /* Style the buttons */
+        .stButton > button {
+            background-color: #008CBA;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            padding: 12px 24px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .stButton > button:hover {
+            background-color: #005f75;  /* Darker cyan on hover */
+        }
+
+        /* Styling for the sidebar */
+        .sidebar .sidebar-content {
+            background-color: #000000;
+            color: white;
+        }
+
+        /* Add padding to markdown components */
+        .stMarkdown {
+            padding: 10px;
+        }
+
+        /* Style for the table */
+        .stTable {
+            color: white;
+            background-color: #2b2b2b;
+            border-radius: 8px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .stTable th, .stTable td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        .stTable th {
+            background-color: #333333;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .stTable tr:nth-child(even) {
+            background-color: #3a3a3a;
+        }
+
+        /* Style for input labels */
+        .stTextInput label, .stNumberInput label, .stSelectbox label, .stTextArea label {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* Custom style for success messages to ensure text is visible */
+        .stSuccess {
+            color: white;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 
 # Display students in a table
 def display_students():
@@ -26,6 +140,8 @@ def create_student(id, name, age, email):
     )
     if response.status_code == 200:
         st.success("Student created successfully!")
+        # Store the created student in session state
+        st.session_state["created_students"][id] = {"id": id, "name": name, "age": age, "email": email}
     else:
         st.error("Failed to create student.")
 
@@ -76,6 +192,19 @@ with st.form("create_form"):
     if submitted:
         create_student(id, name, age, email)
         display_students()
+
+# Get User by ID
+st.header("Get User by ID")
+if st.session_state.get("created_students", {}):
+    ids = list(st.session_state["created_students"].keys())
+    selected_id = st.selectbox("Select Student ID", ids)
+    if st.button("Fetch User"):
+        student = st.session_state["created_students"].get(selected_id)
+        if student:
+            st.write("Student Information:")
+            st.json(student)
+else:
+    st.write("No students created in this session.")
 
 # Update Student
 st.header("Update a Student")
