@@ -11,6 +11,9 @@ Streamlit Frontend: Interactive user interface for managing student data and vie
 
 Backend Utility Scripts: Includes Python scripts for handling data, server interaction, and AI processing.
 
+## Installation
+Clone the repository and install the following dependencies:
+
 
 ## Create a Virtual Environment
 ```bash
@@ -23,18 +26,18 @@ python -m venv env
 .\env\Scripts\activate
 
 ```
-
-
-## Installation
-Clone the repository and install the following dependencies:
+## Install uvicorn and dependencies within the virtual environment:
 
 ```bash
-pip install fastapi uvicorn requests pydantic pandas
+pip install uvicorn fastapi requests pydantic pandas
+
 ```
 
 ## Install Streamlit
+
 ```bash
 pip install streamlit
+
 ```
 ## Running the project
 
@@ -44,6 +47,7 @@ ollama run llama3.2
 ```
 
 Launch the FastAPI Backend: Start the FastAPI backend with this command:
+
 ```python
 uvicorn main:app --reload
 ```
@@ -51,7 +55,7 @@ Start the Streamlit Frontend: To launch the Streamlit UI, run:
 ```python
 streamlit run app.py
 ```
-Open the Streamlit app in your browser (typically available at http://localhost:8501).
+ http://localhost:8000.
 
 ## Usage
 Application Features
