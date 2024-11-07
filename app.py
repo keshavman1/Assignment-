@@ -5,99 +5,99 @@ import requests
 # FastAPI endpoint
 API_URL = "http://127.0.0.1:8000"
 
-# Display students in a table
-def display_students():
+# Function to show the list of students
+def show_students():
     response = requests.get(f"{API_URL}/students")
     if response.status_code == 200:
-        students = response.json()
-        df = pd.DataFrame(students)
+        students_data = response.json()
+        df = pd.DataFrame(students_data)
         if not df.empty:
             st.table(df)
         else:
-            st.write("No students found.")
+            st.write("No students available.")
     else:
-        st.error("Failed to fetch students.")
+        st.error("Unable to fetch student data.")
 
-# Create a new student
-def create_student(id, name, age, email):
+# Function to add a new student
+def add_student(id, name, age, email):
     response = requests.post(
         f"{API_URL}/students",
         json={"id": id, "name": name, "age": age, "email": email},
     )
     if response.status_code == 200:
-        st.success("Student created successfully!")
+        st.success("Student added successfully!")
     else:
-        st.error("Failed to create student.")
+        st.error("Error adding student.")
 
-# Update a student
-def update_student(id, name, age, email):
+# Function to modify an existing student's details
+def modify_student(id, name, age, email):
     response = requests.put(
         f"{API_URL}/students/{id}",
         json={"id": id, "name": name, "age": age, "email": email},
     )
     if response.status_code == 200:
-        st.success("Student updated successfully!")
+        st.success("Student details updated successfully!")
     else:
-        st.error("Failed to update student.")
+        st.error("Error updating student details.")
 
-# Delete a student
-def delete_student(id):
+# Function to remove a student
+def remove_student(id):
     response = requests.delete(f"{API_URL}/students/{id}")
     if response.status_code == 200:
         st.success("Student deleted successfully!")
     else:
-        st.error("Failed to delete student.")
+        st.error("Error deleting student.")
 
-# Generate student summary
-def generate_summary(id):
+# Function to fetch the student's summary
+def get_student_summary(id):
     response = requests.get(f"{API_URL}/students/{id}/summary")
     if response.status_code == 200:
-        summary = response.json().get("summary", "No summary available.")
-        st.info(f"Summary for Student {id}: {summary}")
+        summary_data = response.json().get("summary", "No summary available.")
+        st.info(f"Summary for Student {id}: {summary_data}")
     else:
-        st.error("Failed to generate summary.")
+        st.error("Unable to generate summary.")
 
-# Streamlit app layout
+# Streamlit app interface
 st.title("Student Management System")
 
-# Display Students
-st.header("Student List")
-if st.button("Refresh Student List"):
-    display_students()
+# Show Students Section
+st.header("List of Students")
+if st.button("Refresh List"):
+    show_students()
 
-# Create Student
-st.header("Create a New Student")
-with st.form("create_form"):
-    id = st.number_input("ID", min_value=1, step=1)
-    name = st.text_input("Name")
-    age = st.number_input("Age", min_value=1, step=1)
-    email = st.text_input("Email")
-    submitted = st.form_submit_button("Create Student")
+# Add New Student Section
+st.header("Add a New Student")
+with st.form("add_student_form"):
+    student_id = st.number_input("Student ID", min_value=1, step=1)
+    student_name = st.text_input("Full Name")
+    student_age = st.number_input("Age", min_value=1, step=1)
+    student_email = st.text_input("Email Address")
+    submitted = st.form_submit_button("Add Student")
     if submitted:
-        create_student(id, name, age, email)
-        display_students()
+        add_student(student_id, student_name, student_age, student_email)
+        show_students()
 
-# Update Student
-st.header("Update a Student")
-with st.form("update_form"):
-    update_id = st.number_input("Student ID to Update", min_value=1, step=1)
-    update_name = st.text_input("New Name")
-    update_age = st.number_input("New Age", min_value=1, step=1)
-    update_email = st.text_input("New Email")
-    update_submitted = st.form_submit_button("Update Student")
-    if update_submitted:
-        update_student(update_id, update_name, update_age, update_email)
-        display_students()
+# Modify Student Details Section
+st.header("Modify Student Details")
+with st.form("modify_student_form"):
+    modify_id = st.number_input("Student ID to Modify", min_value=1, step=1)
+    modify_name = st.text_input("New Name")
+    modify_age = st.number_input("New Age", min_value=1, step=1)
+    modify_email = st.text_input("New Email")
+    modify_submitted = st.form_submit_button("Update Student")
+    if modify_submitted:
+        modify_student(modify_id, modify_name, modify_age, modify_email)
+        show_students()
 
-# Delete Student
-st.header("Delete a Student")
-delete_id = st.number_input("Student ID to Delete", min_value=1, step=1)
-if st.button("Delete Student"):
-    delete_student(delete_id)
-    display_students()
+# Remove Student Section
+st.header("Remove a Student")
+student_to_delete = st.number_input("Student ID to Remove", min_value=1, step=1)
+if st.button("Remove Student"):
+    remove_student(student_to_delete)
+    show_students()
 
-# Generate Summary
-st.header("Generate Student Summary")
-summary_id = st.number_input("Student ID for Summary", min_value=1, step=1)
-if st.button("Generate Summary"):
-    generate_summary(summary_id)
+# Generate Student Summary Section
+st.header("Student Summary")
+summary_for_student = st.number_input("Enter Student ID for Summary", min_value=1, step=1)
+if st.button("Get Summary"):
+    get_student_summary(summary_for_student)
