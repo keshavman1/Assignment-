@@ -2,144 +2,167 @@ import streamlit as st
 import pandas as pd
 import requests
 
-# Define the FastAPI base URL for API requests
+# FastAPI endpoint URL
 API_URL = "http://127.0.0.1:8000"
 
-# Function to display the list of students in a table
+# Function to display the list of students in a table format
 def display_students():
-    try:
-        # Fetch all students from the FastAPI endpoint
-        response = requests.get(f"{API_URL}/students")
-        
-        # If the request is successful, display the students in a table
-        if response.status_code == 200:
-            students = response.json()
-            df = pd.DataFrame(students)  # Convert the list of students to a DataFrame
-            
-            # Check if the DataFrame is not empty
-            if not df.empty:
-                st.table(df)  # Display students in a table format
-            else:
-                st.write("No students found.")  # If no students, show a message
-        else:
-            st.error("Failed to fetch students. Status Code: {}".format(response.status_code))
+    """
+    Fetches student data from the FastAPI backend and displays it in a table.
+    If no data is returned, shows a message indicating that no students were found.
+    """
+    # Sending GET request to fetch the list of students
+    response = requests.get(f"{API_URL}/students")
     
-    except requests.exceptions.RequestException as e:
-        # Catch any request-related errors
-        st.error(f"Error fetching data: {e}")
+    # Check if the response is successful
+    if response.status_code == 200:
+        # Parse the response JSON into a list of students
+        students = response.json()
+        
+        # Convert the list of students into a pandas DataFrame for better readability
+        df = pd.DataFrame(students)
+        
+        # Check if the DataFrame is empty and display the appropriate message
+        if not df.empty:
+            # Display the student data in a table format
+            st.table(df)
+        else:
+            st.write("No students found.")
+    else:
+        # Handle the case when the API call fails
+        st.error("Failed to fetch students.")
 
-# Function to create a new student
+# Function to create a new student by sending data to the API
 def create_student(id, name, age, email):
-    try:
-        # Send a POST request to the FastAPI endpoint to create a new student
-        response = requests.post(
-            f"{API_URL}/students",
-            json={"id": id, "name": name, "age": age, "email": email},
-        )
-        
-        # Check if the student was created successfully
-        if response.status_code == 200:
-            st.success("Student created successfully!")
-        else:
-            st.error("Failed to create student. Status Code: {}".format(response.status_code))
+    """
+    Sends a POST request to create a new student in the backend.
+    Displays a success or error message based on the response.
+    """
+    # Prepare the student data in JSON format
+    student_data = {"id": id, "name": name, "age": age, "email": email}
     
-    except requests.exceptions.RequestException as e:
-        # Catch any request-related errors
-        st.error(f"Error creating student: {e}")
+    # Sending POST request to create a new student
+    response = requests.post(f"{API_URL}/students", json=student_data)
+    
+    # Check if the student was created successfully
+    if response.status_code == 200:
+        st.success("Student created successfully!")
+    else:
+        # Handle failure case
+        st.error("Failed to create student.")
 
 # Function to update an existing student's details
 def update_student(id, name, age, email):
-    try:
-        # Send a PUT request to the FastAPI endpoint to update the student information
-        response = requests.put(
-            f"{API_URL}/students/{id}",
-            json={"id": id, "name": name, "age": age, "email": email},
-        )
-        
-        # Check if the student was updated successfully
-        if response.status_code == 200:
-            st.success("Student updated successfully!")
-        else:
-            st.error("Failed to update student. Status Code: {}".format(response.status_code))
+    """
+    Sends a PUT request to update the details of an existing student.
+    Displays a success or error message based on the response.
+    """
+    # Prepare the updated student data in JSON format
+    updated_data = {"id": id, "name": name, "age": age, "email": email}
     
-    except requests.exceptions.RequestException as e:
-        # Catch any request-related errors
-        st.error(f"Error updating student: {e}")
+    # Sending PUT request to update the student information
+    response = requests.put(f"{API_URL}/students/{id}", json=updated_data)
+    
+    # Check if the student information was updated successfully
+    if response.status_code == 200:
+        st.success("Student updated successfully!")
+    else:
+        # Handle failure case
+        st.error("Failed to update student.")
 
-# Function to delete a student
+# Function to delete a student based on the student ID
 def delete_student(id):
-    try:
-        # Send a DELETE request to the FastAPI endpoint to remove a student
-        response = requests.delete(f"{API_URL}/students/{id}")
-        
-        # Check if the student was deleted successfully
-        if response.status_code == 200:
-            st.success("Student deleted successfully!")
-        else:
-            st.error("Failed to delete student. Status Code: {}".format(response.status_code))
+    """
+    Sends a DELETE request to remove a student from the backend.
+    Displays a success or error message based on the response.
+    """
+    # Sending DELETE request to delete a student
+    response = requests.delete(f"{API_URL}/students/{id}")
     
-    except requests.exceptions.RequestException as e:
-        # Catch any request-related errors
-        st.error(f"Error deleting student: {e}")
+    # Check if the student was deleted successfully
+    if response.status_code == 200:
+        st.success("Student deleted successfully!")
+    else:
+        # Handle failure case
+        st.error("Failed to delete student.")
 
-# Function to generate a summary for a student
+# Function to generate a summary for a specific student
 def generate_summary(id):
-    try:
-        # Send a GET request to fetch the student summary
-        response = requests.get(f"{API_URL}/students/{id}/summary")
-        
-        # Check if the summary was successfully generated
-        if response.status_code == 200:
-            summary = response.json().get("summary", "No summary available.")
-            st.info(f"Summary for Student {id}: {summary}")
-        else:
-            st.error("Failed to generate summary. Status Code: {}".format(response.status_code))
+    """
+    Sends a GET request to fetch a student's summary from the backend.
+    Displays the summary or an error message based on the response.
+    """
+    # Sending GET request to fetch the student's summary
+    response = requests.get(f"{API_URL}/students/{id}/summary")
     
-    except requests.exceptions.RequestException as e:
-        # Catch any request-related errors
-        st.error(f"Error generating summary: {e}")
+    # Check if the summary was fetched successfully
+    if response.status_code == 200:
+        # Retrieve the summary from the response
+        summary = response.json().get("summary", "No summary available.")
+        st.info(f"Summary for Student {id}: {summary}")
+    else:
+        # Handle failure case
+        st.error("Failed to generate summary.")
 
-# Streamlit app layout setup
+# Streamlit app layout and user interface design
+
+# Title of the app
 st.title("Student Management System")
 
-# Display the list of students
+# Display Students Section
 st.header("Student List")
 if st.button("Refresh Student List"):
+    # Refresh the student list by calling the function to display students
     display_students()
 
-# Create a new student
+# Create Student Section
 st.header("Create a New Student")
 with st.form("create_form"):
-    id = st.number_input("ID", min_value=1, step=1)  # Input for student ID
-    name = st.text_input("Name")  # Input for student name
-    age = st.number_input("Age", min_value=1, step=1)  # Input for student age
-    email = st.text_input("Email")  # Input for student email
+    # Form fields for creating a new student
+    id = st.number_input("ID", min_value=1, step=1)
+    name = st.text_input("Name")
+    age = st.number_input("Age", min_value=1, step=1)
+    email = st.text_input("Email")
+    
+    # Form submission button
     submitted = st.form_submit_button("Create Student")
+    
+    # If the form is submitted, call the function to create a student
     if submitted:
         create_student(id, name, age, email)
-        display_students()  # Refresh the list after creating a student
+        # Refresh the student list after creation
+        display_students()
 
-# Update an existing student's information
+# Update Student Section
 st.header("Update a Student")
 with st.form("update_form"):
-    update_id = st.number_input("Student ID to Update", min_value=1, step=1)  # Student ID to update
-    update_name = st.text_input("New Name")  # New student name
-    update_age = st.number_input("New Age", min_value=1, step=1)  # New student age
-    update_email = st.text_input("New Email")  # New student email
+    # Form fields for updating an existing student's details
+    update_id = st.number_input("Student ID to Update", min_value=1, step=1)
+    update_name = st.text_input("New Name")
+    update_age = st.number_input("New Age", min_value=1, step=1)
+    update_email = st.text_input("New Email")
+    
+    # Form submission button
     update_submitted = st.form_submit_button("Update Student")
+    
+    # If the form is submitted, call the function to update the student
     if update_submitted:
         update_student(update_id, update_name, update_age, update_email)
-        display_students()  # Refresh the list after updating a student
+        # Refresh the student list after updating
+        display_students()
 
-# Delete a student
+# Delete Student Section
 st.header("Delete a Student")
-delete_id = st.number_input("Student ID to Delete", min_value=1, step=1)  # ID of the student to delete
+delete_id = st.number_input("Student ID to Delete", min_value=1, step=1)
 if st.button("Delete Student"):
+    # Call the function to delete a student
     delete_student(delete_id)
-    display_students()  # Refresh the list after deleting a student
+    # Refresh the student list after deletion
+    display_students()
 
-# Generate a summary for a student
+# Generate Summary Section
 st.header("Generate Student Summary")
-summary_id = st.number_input("Student ID for Summary", min_value=1, step=1)  # ID of the student for summary
+summary_id = st.number_input("Student ID for Summary", min_value=1, step=1)
 if st.button("Generate Summary"):
+    # Call the function to generate and display the student's summary
     generate_summary(summary_id)
