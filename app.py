@@ -174,11 +174,11 @@ def generate_summary(id):
         st.error("Failed to generate summary.")
 
 # Streamlit app layout
-st.title("Student Management System")
+st.title("Education Management System")
 
 # Display Students
-st.header("Student List")
-if st.button("Refresh Student List"):
+st.header("Data Of Students")
+if st.button("Refresh Data"):
     display_students()
 
 # Create Student
